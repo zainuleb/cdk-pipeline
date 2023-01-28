@@ -22,21 +22,20 @@ export class CdkPipelineStack extends cdk.Stack {
 
     const testingStage = pipeline.addStage(
       new MyPipelineAppStage(this, 'test', {
-        env: {
-          account: '568489014447',
-          region: 'us-east-1',
-        },
+        env: { account: '568489014447', region: 'us-east-1' },
       })
     );
 
-    testingStage.addPost(new ManualApprovalStep('Manual Step of Approval'));
+    testingStage.addPre(
+      new ShellStep('Run Unit Tests', { commands: ['npm install', 'npm test'] })
+    );
+    testingStage.addPost(
+      new ManualApprovalStep('Manual approval before production')
+    );
 
     const prodStage = pipeline.addStage(
       new MyPipelineAppStage(this, 'prod', {
-        env: {
-          account: '568489014447',
-          region: 'us-east-1',
-        },
+        env: { account: '568489014447', region: 'us-east-1' },
       })
     );
   }
